@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useConversation } from '@11labs/react';
 import { MicIcon, MicOffIcon, VideoIcon, VideoOffIcon, MessageSquareIcon, Users, PhoneOff } from 'lucide-react';
 import { Message } from '@/lib/types';
 
 export function InterviewInterface() {
     const videoRef = useRef<HTMLVideoElement>(null);
+    const chatContainerRef = useRef<HTMLDivElement | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
     const [isChatOpen, setIsChatOpen] = useState(true);
     const [isVideoEnabled, setIsVideoEnabled] = useState(true);
@@ -21,6 +22,18 @@ export function InterviewInterface() {
         },
         onError: (error: any) => console.error('Error:', error),
     });
+
+    const scrollToBottom = () => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
+
+
 
     const startInterview = useCallback(async () => {
         try {
@@ -167,7 +180,7 @@ export function InterviewInterface() {
 
             {/* Sidebar chat */}
             {isChatOpen && (
-                <div className="w-80 bg-white border-l border-gray-300 flex flex-col h-full">
+                <div ref={chatContainerRef} className="w-80 bg-white border-l border-gray-300 flex flex-col h-full">
                     <div className="p-4 border-b border-gray-200">
                         <h2 className="text-lg font-medium">Conversation</h2>
                     </div>
