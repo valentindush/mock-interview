@@ -1,0 +1,8 @@
+services:
+  mock-interview:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mock-interview
+    ports:
+      - "3003:3000"
