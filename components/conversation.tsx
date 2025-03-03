@@ -2,6 +2,7 @@
 
 import React, { useCallback, useState } from 'react';
 import { useConversation } from '@11labs/react';
+import { Message } from '@/lib/types';
 import { MicIcon, MicOffIcon, VideoIcon, VideoOffIcon, MessageSquareIcon, Users, PhoneOff } from 'lucide-react';
 
 export function InterviewInterface() {
@@ -39,12 +40,14 @@ export function InterviewInterface() {
   const toggleVideo = () => setIsVideoEnabled(prev => !prev);
   const toggleChat = () => setIsChatOpen(prev => !prev);
 
-  const sendMessage = (e: { preventDefault: () => void; }) => {
+  const sendMessage = (e) => {
     e.preventDefault();
     if (messageInput.trim()) {
-      const newMessage: Message = {
-        message: messageInput,
-        source: "user"
+      const newMessage = {
+        id: Date.now().toString(),
+        content: messageInput,
+        sender: 'You',
+        timestamp: new Date().toISOString(),
       };
       setMessages(prev => [...prev, newMessage]);
       setMessageInput('');
@@ -158,13 +161,13 @@ export function InterviewInterface() {
             {messages.length === 0 ? (
               <p className="text-gray-500 text-center mt-10">No messages yet</p>
             ) : (
-              messages.map((msg, index) => (
-                <div key={index} className={`flex flex-col ${msg.source === 'user' ? 'items-end' : 'items-start'}`}>
-                  <div className={`px-4 py-2 rounded-lg max-w-xs ${msg.source === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
-                    <p>{msg.message}</p>
+              messages.map((msg) => (
+                <div key={msg.id} className={`flex flex-col ${msg.sender === 'You' ? 'items-end' : 'items-start'}`}>
+                  <div className={`px-4 py-2 rounded-lg max-w-xs ${msg.sender === 'You' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
+                    <p>{msg.content}</p>
                   </div>
                   <span className="text-xs text-gray-500 mt-1">
-                    {msg.source === 'user' ? 'You' : 'AI'} • {new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    {msg.sender} • {new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                   </span>
                 </div>
               ))
